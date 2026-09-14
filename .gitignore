@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+venv/
+
+# IDE
+.idea/
+
+# Dataset
+data/raw/
+data/crops/
+data/masks/
+data/annotations/
+
+# Training outputs
+checkpoints/
+*.pt
+*.pth
+
+# Analysis outputs
+analysis/outputs/
+
+# OS
+.DS_Store
+Thumbs.db
