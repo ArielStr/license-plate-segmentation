@@ -113,8 +113,11 @@ class PlateSegmentationDataset(Dataset):
     def __getitem__(self, index: int):
         row = self.df.iloc[index]
 
-        crop_path = PROJECT_ROOT / row["crop_path"]
-        mask_path = PROJECT_ROOT / row["mask_path"]
+        crop_rel = str(row["crop_path"]).replace("\\", "/")
+        mask_rel = str(row["mask_path"]).replace("\\", "/")
+
+        crop_path = PROJECT_ROOT / Path(crop_rel)
+        mask_path = PROJECT_ROOT / Path(mask_rel)
 
         image_bgr = cv2.imread(str(crop_path), cv2.IMREAD_COLOR)
         mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
