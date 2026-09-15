@@ -26,3 +26,5 @@ analysis/outputs/
 # OS
 .DS_Store
 Thumbs.db
+
+evaluation/
