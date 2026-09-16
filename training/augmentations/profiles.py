@@ -13,7 +13,8 @@ AVAILABLE_PROFILES = (
     "global_brightness_v1",
     "local_shadow_v1",
     "illumination_gradient_v1",
-    "gaussian_blur_v1"
+    "gaussian_blur_v1",
+    "augmentation_v1"
 )
 
 def build_gaussian_blur_v1() -> A.ReplayCompose:
@@ -73,6 +74,47 @@ def build_illumination_gradient_v1() -> A.ReplayCompose:
             p=0.8,
         )
     ])
+
+def build_augmentation_v1() -> A.ReplayCompose:
+    return A.ReplayCompose([
+        # Global illumination / exposure variation
+        A.RandomBrightnessContrast(
+            brightness_limit=0.20,
+            contrast_limit=0.15,
+            p=0.35,
+        ),
+
+        # Local illumination variation:
+        # apply at most ONE of shadow / smooth gradient
+        A.OneOf(
+            [
+                RandomLocalShadow(
+                    moderate_strength_range=(0.50, 0.85),
+                    strong_strength_range=(0.25, 0.50),
+                    strong_shadow_probability=0.20,
+                    band_probability=0.10,
+                    band_width_range=(0.12, 0.35),
+                    blur_fraction_range=(0.03, 0.10),
+                    p=1.0,
+                ),
+
+                RandomIlluminationGradient(
+                    dark_factor_range=(0.40, 0.70),
+                    bright_factor_range=(1.15, 1.40),
+                    p=1.0,
+                ),
+            ],
+            p=0.35,
+        ),
+
+        # Mild blur, relatively rare
+        RandomGaussianBlur(
+            sigma_range=(0.5, 1.5),
+            p=0.20,
+        ),
+    ])
+
+
 def build_train_augmentation(
     profile: str = "none",
 ) -> Optional[A.ReplayCompose]:
@@ -96,6 +138,9 @@ def build_train_augmentation(
 
     if profile == "gaussian_blur_v1":
         return build_gaussian_blur_v1()
+
+    if profile == "augmentation_v1":
+        return build_augmentation_v1()
 
     raise ValueError(
         f"Unknown augmentation profile: '{profile}'. "

@@ -130,8 +130,7 @@ def extract_replay_metadata(
     """
     Extract readable metadata from an Albumentations ReplayCompose result.
 
-    This function is augmentation-agnostic. It does not know about
-    shadows, brightness, blur, rotation, etc.
+    Supports nested transforms such as OneOf.
     """
 
     if replay is None:
@@ -139,9 +138,9 @@ def extract_replay_metadata(
 
     metadata = []
 
-    for transform in replay.get("transforms", []):
+    def visit_transform(transform):
         if not transform.get("applied", False):
-            continue
+            return
 
         class_name = transform.get(
             "__class_fullname__",
@@ -149,6 +148,16 @@ def extract_replay_metadata(
         )
         transform_name = class_name.split(".")[-1]
 
+        # Composite transform such as OneOf:
+        # inspect the child transform that was actually applied.
+        children = transform.get("transforms")
+
+        if children:
+            for child in children:
+                visit_transform(child)
+            return
+
+        # Regular transform
         params = transform.get("params") or {}
         readable_params = []
 
@@ -165,11 +174,11 @@ def extract_replay_metadata(
             if len(readable_params) >= max_params_per_transform:
                 break
 
-        if readable_params:
-            metadata.append(transform_name)
-            metadata.extend(readable_params)
-        else:
-            metadata.append(transform_name)
+        metadata.append(transform_name)
+        metadata.extend(readable_params)
+
+    for transform in replay.get("transforms", []):
+        visit_transform(transform)
 
     return metadata
 
@@ -370,7 +379,7 @@ def main(
 
 
 if __name__ == "__main__":
-    PROFILE = "gaussian_blur_v1"
+    PROFILE = "augmentation_v1"
     NUM_IMAGES = 5
     NUM_AUGMENTATIONS = 7
     SEED = 42
