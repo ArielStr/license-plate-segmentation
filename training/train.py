@@ -9,11 +9,15 @@ from dataset import PlateSegmentationDataset
 from losses import BCEDiceLoss
 from metrics import binary_dice, binary_iou
 from model import build_model, freeze_encoder, unfreeze_encoder
-
+from training.augmentations import build_train_augmentation
+EXPERIMENT_NAME = "augmentation_v1"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CHECKPOINT_DIR = PROJECT_ROOT / "checkpoints"
-
+CHECKPOINT_DIR = (
+    PROJECT_ROOT
+    / "checkpoints"
+    / EXPERIMENT_NAME
+)
 BATCH_SIZE = 8
 NUM_WORKERS = 0  # safe default for Windows; increase in Colab if desired
 
@@ -24,7 +28,7 @@ PHASE2_EPOCHS = 30
 PHASE2_LR = 1e-4
 
 WEIGHT_DECAY = 1e-4
-
+AUGMENTATION_PROFILE = "augmentation_v1"
 
 def run_epoch(
     model,
@@ -122,6 +126,8 @@ def train_phase(
                     "val_iou": best_val_iou,
                     "phase": name,
                     "epoch": epoch,
+                    "experiment": EXPERIMENT_NAME,
+                    "augmentation_profile": AUGMENTATION_PROFILE,
                 },
                 checkpoint_path,
             )
@@ -142,9 +148,21 @@ def main():
     )
 
     print(f"Device: {device}")
+    print(f"Experiment: {EXPERIMENT_NAME}")
+    print(f"Augmentation: {AUGMENTATION_PROFILE}")
+    print(f"Checkpoint dir: {CHECKPOINT_DIR}")
 
-    train_dataset = PlateSegmentationDataset(split="train")
-    val_dataset = PlateSegmentationDataset(split="val")
+    train_augmentation = build_train_augmentation(
+        profile=AUGMENTATION_PROFILE,
+    )
+    train_dataset = PlateSegmentationDataset(
+        split="train",
+        augment=train_augmentation,
+    )
+
+    val_dataset = PlateSegmentationDataset(
+        split="val",
+    )
 
     train_loader = DataLoader(
         train_dataset,
