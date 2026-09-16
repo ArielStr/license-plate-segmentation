@@ -5,8 +5,11 @@ import albumentations as A
 import cv2
 import numpy as np
 
-from training.augmentations.blur import RandomGaussianBlur
-from training.augmentations.illumination import RandomLocalShadow, RandomIlluminationGradient
+from .blur import RandomGaussianBlur
+from .illumination import (
+    RandomLocalShadow,
+    RandomIlluminationGradient,
+)
 
 AVAILABLE_PROFILES = (
     "none",
