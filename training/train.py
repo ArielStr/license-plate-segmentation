@@ -9,7 +9,7 @@ from dataset import PlateSegmentationDataset
 from losses import BCEDiceLoss
 from metrics import binary_dice, binary_iou
 from model import build_model, freeze_encoder, unfreeze_encoder
-from training.augmentations import build_train_augmentation
+from augmentations import build_train_augmentation
 EXPERIMENT_NAME = "augmentation_v1"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
