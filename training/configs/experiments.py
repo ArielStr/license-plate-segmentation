@@ -58,6 +58,16 @@ EXPERIMENTS = {
         scheduler="cosine",
         scheduler_min_lr=1e-6,
     ),
+    "batch_size_4_v1": ExperimentConfig(
+        name="batch_size_4_v1",
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+    ),
 }
 
 
