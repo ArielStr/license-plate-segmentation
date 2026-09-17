@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-
+import argparse
 import torch
 from torch.utils.data import DataLoader
 
@@ -10,26 +10,11 @@ from losses import BCEDiceLoss
 from metrics import binary_dice, binary_iou
 from model import build_model, freeze_encoder, unfreeze_encoder
 from augmentations import build_train_augmentation
-EXPERIMENT_NAME = "cosine_lr_v1"
+from configs import get_experiment_config
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CHECKPOINT_DIR = (
-    PROJECT_ROOT
-    / "checkpoints"
-    / EXPERIMENT_NAME
-)
-BATCH_SIZE = 8
 NUM_WORKERS = 0  # safe default for Windows; increase in Colab if desired
-
-PHASE1_EPOCHS = 5
-PHASE1_LR = 1e-3
-
-PHASE2_EPOCHS = 30
-PHASE2_LR = 1e-4
-PHASE2_MIN_LR = 1e-6
-
-WEIGHT_DECAY = 1e-4
-AUGMENTATION_PROFILE = "none"
 
 def run_epoch(
     model,
@@ -87,6 +72,9 @@ def train_phase(
     device,
     epochs,
     best_val_iou,
+    checkpoint_dir,
+    experiment_name,
+    augmentation_profile,
     scheduler=None,
 ):
     for epoch in range(1, epochs + 1):
@@ -122,7 +110,7 @@ def train_phase(
         if val_stats["iou"] > best_val_iou:
             best_val_iou = val_stats["iou"]
 
-            checkpoint_path = CHECKPOINT_DIR / "best_model.pt"
+            checkpoint_path = checkpoint_dir / "best_model.pt"
 
             torch.save(
                 {
@@ -130,8 +118,8 @@ def train_phase(
                     "val_iou": best_val_iou,
                     "phase": name,
                     "epoch": epoch,
-                    "experiment": EXPERIMENT_NAME,
-                    "augmentation_profile": AUGMENTATION_PROFILE,
+                    "experiment": experiment_name,
+                    "augmentation_profile": augmentation_profile,
                 },
                 checkpoint_path,
             )
@@ -144,22 +132,46 @@ def train_phase(
             scheduler.step()
 
     return best_val_iou
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Train a license plate segmentation experiment."
+    )
 
+    parser.add_argument(
+        "--experiment",
+        type=str,
+        required=True,
+        help="Experiment configuration name.",
+    )
+
+    return parser.parse_args()
 
 def main():
-    CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+    args = parse_args()
+
+    config = get_experiment_config(args.experiment)
+
+    checkpoint_dir = (
+        PROJECT_ROOT
+        / "checkpoints"
+        / config.name
+    )
+
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     device = torch.device(
         "cuda" if torch.cuda.is_available() else "cpu"
     )
 
     print(f"Device: {device}")
-    print(f"Experiment: {EXPERIMENT_NAME}")
-    print(f"Augmentation: {AUGMENTATION_PROFILE}")
-    print(f"Checkpoint dir: {CHECKPOINT_DIR}")
+    print(f"Experiment: {config.name}")
+    print(f"Batch size: {config.batch_size}")
+    print(f"Augmentation: {config.augmentation_profile}")
+    print(f"Scheduler: {config.scheduler}")
+    print(f"Checkpoint dir: {checkpoint_dir}")
 
     train_augmentation = build_train_augmentation(
-        profile=AUGMENTATION_PROFILE,
+        profile=config.augmentation_profile,
     )
     train_dataset = PlateSegmentationDataset(
         split="train",
@@ -172,7 +184,7 @@ def main():
 
     train_loader = DataLoader(
         train_dataset,
-        batch_size=BATCH_SIZE,
+        batch_size=config.batch_size,
         shuffle=True,
         num_workers=NUM_WORKERS,
         pin_memory=(device.type == "cuda"),
@@ -180,7 +192,7 @@ def main():
 
     val_loader = DataLoader(
         val_dataset,
-        batch_size=BATCH_SIZE,
+        batch_size=config.batch_size,
         shuffle=False,
         num_workers=NUM_WORKERS,
         pin_memory=(device.type == "cuda"),
@@ -198,8 +210,8 @@ def main():
 
     optimizer = torch.optim.AdamW(
         filter(lambda p: p.requires_grad, model.parameters()),
-        lr=PHASE1_LR,
-        weight_decay=WEIGHT_DECAY,
+        lr=config.phase1_lr,
+        weight_decay=config.weight_decay,
     )
 
     best_val_iou = train_phase(
@@ -210,8 +222,11 @@ def main():
         criterion=criterion,
         optimizer=optimizer,
         device=device,
-        epochs=PHASE1_EPOCHS,
+        epochs=config.phase1_epochs,
         best_val_iou=best_val_iou,
+        checkpoint_dir=checkpoint_dir,
+        experiment_name=config.name,
+        augmentation_profile=config.augmentation_profile,
     )
 
     # ---------------------------------------------------------
@@ -221,15 +236,22 @@ def main():
 
     optimizer = torch.optim.AdamW(
         model.parameters(),
-        lr=PHASE2_LR,
-        weight_decay=WEIGHT_DECAY,
+        lr=config.phase2_lr,
+        weight_decay=config.weight_decay,
     )
 
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer,
-        T_max=PHASE2_EPOCHS,
-        eta_min=PHASE2_MIN_LR,
-    )
+    scheduler = None
+
+    if config.scheduler == "cosine":
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer,
+            T_max=config.phase2_epochs,
+            eta_min=config.scheduler_min_lr,
+        )
+    elif config.scheduler is not None:
+        raise ValueError(
+            f"Unsupported scheduler: {config.scheduler}"
+        )
 
     best_val_iou = train_phase(
         name="full_finetune",
@@ -239,14 +261,17 @@ def main():
         criterion=criterion,
         optimizer=optimizer,
         device=device,
-        epochs=PHASE2_EPOCHS,
+        epochs=config.phase2_epochs,
         best_val_iou=best_val_iou,
+        checkpoint_dir=checkpoint_dir,
+        experiment_name=config.name,
+        augmentation_profile=config.augmentation_profile,
         scheduler=scheduler,
     )
 
     print()
     print(f"Training finished. Best val IoU: {best_val_iou:.4f}")
-    print(f"Checkpoint: {CHECKPOINT_DIR / 'best_model.pt'}")
+    print(f"Checkpoint: {checkpoint_dir / 'best_model.pt'}")
 
 
 if __name__ == "__main__":
