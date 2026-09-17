@@ -73,17 +73,7 @@ EXPERIMENTS = {
         weight_decay=1e-4,
         augmentation_profile="none",
     ),
-"seed_smoke_test": ExperimentConfig(
-    name="seed_smoke_test",
-    seed=42,
-    batch_size=8,
-    phase1_epochs=1,
-    phase1_lr=1e-3,
-    phase2_epochs=1,
-    phase2_lr=1e-4,
-    weight_decay=1e-4,
-    augmentation_profile="none",
-)
+
 }
 
 
