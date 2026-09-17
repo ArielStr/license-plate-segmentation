@@ -15,8 +15,8 @@ from model import build_model
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CHECKPOINT = PROJECT_ROOT / "checkpoints" / "best_model.pt"
-OUTPUT_DIR = PROJECT_ROOT / "evaluation"
+DEFAULT_CHECKPOINT = PROJECT_ROOT / "checkpoints" /"augmentation_v1"/ "best_model.pt"
+OUTPUT_DIR = PROJECT_ROOT / "evaluation" / "augmentation_v1"
 
 BATCH_SIZE = 1
 NUM_WORKERS = 0
