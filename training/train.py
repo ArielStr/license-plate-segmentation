@@ -10,7 +10,7 @@ from losses import BCEDiceLoss
 from metrics import binary_dice, binary_iou
 from model import build_model, freeze_encoder, unfreeze_encoder
 from augmentations import build_train_augmentation
-EXPERIMENT_NAME = "augmentation_v1"
+EXPERIMENT_NAME = "cosine_lr_v1"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CHECKPOINT_DIR = (
@@ -26,9 +26,10 @@ PHASE1_LR = 1e-3
 
 PHASE2_EPOCHS = 30
 PHASE2_LR = 1e-4
+PHASE2_MIN_LR = 1e-6
 
 WEIGHT_DECAY = 1e-4
-AUGMENTATION_PROFILE = "augmentation_v1"
+AUGMENTATION_PROFILE = "none"
 
 def run_epoch(
     model,
@@ -86,8 +87,10 @@ def train_phase(
     device,
     epochs,
     best_val_iou,
+    scheduler=None,
 ):
     for epoch in range(1, epochs + 1):
+        current_lr = optimizer.param_groups[0]["lr"]
         train_stats = run_epoch(
             model=model,
             loader=train_loader,
@@ -107,6 +110,7 @@ def train_phase(
         print(
             f"[{name}] "
             f"Epoch {epoch:02d}/{epochs:02d} | "
+            f"lr={current_lr:.8f} | "
             f"train_loss={train_stats['loss']:.4f} "
             f"train_iou={train_stats['iou']:.4f} "
             f"train_dice={train_stats['dice']:.4f} | "
@@ -136,6 +140,8 @@ def train_phase(
                 f"  -> saved new best checkpoint "
                 f"(val IoU={best_val_iou:.4f})"
             )
+        if scheduler is not None:
+            scheduler.step()
 
     return best_val_iou
 
@@ -219,6 +225,12 @@ def main():
         weight_decay=WEIGHT_DECAY,
     )
 
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer,
+        T_max=PHASE2_EPOCHS,
+        eta_min=PHASE2_MIN_LR,
+    )
+
     best_val_iou = train_phase(
         name="full_finetune",
         model=model,
@@ -229,6 +241,7 @@ def main():
         device=device,
         epochs=PHASE2_EPOCHS,
         best_val_iou=best_val_iou,
+        scheduler=scheduler,
     )
 
     print()
