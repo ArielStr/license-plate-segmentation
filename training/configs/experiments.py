@@ -7,6 +7,7 @@ from dataclasses import dataclass
 class ExperimentConfig:
     name: str
 
+    seed: int
     batch_size: int
 
     phase1_epochs: int
@@ -27,6 +28,7 @@ EXPERIMENTS = {
     "baseline_v1": ExperimentConfig(
         name="baseline_v1",
         batch_size=8,
+        seed=42,
         phase1_epochs=5,
         phase1_lr=1e-3,
         phase2_epochs=30,
@@ -38,6 +40,7 @@ EXPERIMENTS = {
     "augmentation_v1": ExperimentConfig(
         name="augmentation_v1",
         batch_size=8,
+        seed=42,
         phase1_epochs=5,
         phase1_lr=1e-3,
         phase2_epochs=30,
@@ -49,6 +52,7 @@ EXPERIMENTS = {
     "cosine_lr_v1": ExperimentConfig(
         name="cosine_lr_v1",
         batch_size=8,
+        seed=42,
         phase1_epochs=5,
         phase1_lr=1e-3,
         phase2_epochs=30,
@@ -61,6 +65,7 @@ EXPERIMENTS = {
     "batch_size_4_v1": ExperimentConfig(
         name="batch_size_4_v1",
         batch_size=4,
+        seed=42,
         phase1_epochs=5,
         phase1_lr=1e-3,
         phase2_epochs=30,
@@ -68,6 +73,17 @@ EXPERIMENTS = {
         weight_decay=1e-4,
         augmentation_profile="none",
     ),
+"seed_smoke_test": ExperimentConfig(
+    name="seed_smoke_test",
+    seed=42,
+    batch_size=8,
+    phase1_epochs=1,
+    phase1_lr=1e-3,
+    phase2_epochs=1,
+    phase2_lr=1e-4,
+    weight_decay=1e-4,
+    augmentation_profile="none",
+)
 }
 
 
