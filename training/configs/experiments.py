@@ -23,6 +23,8 @@ class ExperimentConfig:
     scheduler: str | None = None
     scheduler_min_lr: float | None = None
 
+    phase2_batch_schedule: tuple[tuple[int, int], ...] | None = None
+
 
 EXPERIMENTS = {
     "baseline_v1": ExperimentConfig(
@@ -73,6 +75,28 @@ EXPERIMENTS = {
         weight_decay=1e-4,
         augmentation_profile="none",
     ),
+    "progressive_batch_v1": ExperimentConfig(
+        name="progressive_batch_v1",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+
+        augmentation_profile="none",
+
+        phase2_batch_schedule=(
+            (10, 4),
+            (10, 8),
+            (10, 16),
+        ),
+    ),
+
 
 }
 

@@ -35,7 +35,7 @@ def run_epoch(
     total_loss = 0.0
     total_iou = 0.0
     total_dice = 0.0
-    total_batches = 0
+    total_samples = 0
 
     for batch in loader:
         images = batch["image"].to(device)
@@ -52,15 +52,17 @@ def run_epoch(
                 loss.backward()
                 optimizer.step()
 
-        total_loss += loss.item()
-        total_iou += binary_iou(logits.detach(), masks)
-        total_dice += binary_dice(logits.detach(), masks)
-        total_batches += 1
+        batch_size = images.size(0)
+
+        total_loss += loss.item() * batch_size
+        total_iou += binary_iou(logits.detach(), masks) * batch_size
+        total_dice += binary_dice(logits.detach(), masks) * batch_size
+        total_samples += batch_size
 
     return {
-        "loss": total_loss / total_batches,
-        "iou": total_iou / total_batches,
-        "dice": total_dice / total_batches,
+        "loss": total_loss / total_samples,
+        "iou": total_iou / total_samples,
+        "dice": total_dice / total_samples,
     }
 
 
@@ -78,9 +80,16 @@ def train_phase(
     experiment_name,
     augmentation_profile,
     scheduler=None,
+    start_epoch=1,
+    total_epochs=None,
 ):
-    for epoch in range(1, epochs + 1):
+    if total_epochs is None:
+        total_epochs = epochs
+    end_epoch = start_epoch + epochs - 1
+
+    for epoch in range(start_epoch, end_epoch + 1):
         current_lr = optimizer.param_groups[0]["lr"]
+        current_batch_size = train_loader.batch_size
         train_stats = run_epoch(
             model=model,
             loader=train_loader,
@@ -99,8 +108,9 @@ def train_phase(
 
         print(
             f"[{name}] "
-            f"Epoch {epoch:02d}/{epochs:02d} | "
+            f"Epoch {epoch:02d}/{total_epochs:02d} | "
             f"lr={current_lr:.8f} | "
+            f"batch_size={current_batch_size} | "
             f"train_loss={train_stats['loss']:.4f} "
             f"train_iou={train_stats['iou']:.4f} "
             f"train_dice={train_stats['dice']:.4f} | "
@@ -120,6 +130,7 @@ def train_phase(
                     "val_iou": best_val_iou,
                     "phase": name,
                     "epoch": epoch,
+                    "batch_size": current_batch_size,
                     "experiment": experiment_name,
                     "augmentation_profile": augmentation_profile,
                 },
@@ -161,6 +172,19 @@ def set_seed(seed: int) -> None:
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
+def build_train_loader(
+    train_dataset,
+    batch_size,
+    device,
+):
+    return DataLoader(
+        train_dataset,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=NUM_WORKERS,
+        pin_memory=(device.type == "cuda"),
+    )
+
 def main():
     args = parse_args()
     config = get_experiment_config(args.experiment)
@@ -198,12 +222,10 @@ def main():
         split="val",
     )
 
-    train_loader = DataLoader(
-        train_dataset,
+    train_loader = build_train_loader(
+        train_dataset=train_dataset,
         batch_size=config.batch_size,
-        shuffle=True,
-        num_workers=NUM_WORKERS,
-        pin_memory=(device.type == "cuda"),
+        device=device,
     )
 
     val_loader = DataLoader(
@@ -269,21 +291,71 @@ def main():
             f"Unsupported scheduler: {config.scheduler}"
         )
 
-    best_val_iou = train_phase(
-        name="full_finetune",
-        model=model,
-        train_loader=train_loader,
-        val_loader=val_loader,
-        criterion=criterion,
-        optimizer=optimizer,
-        device=device,
-        epochs=config.phase2_epochs,
-        best_val_iou=best_val_iou,
-        checkpoint_dir=checkpoint_dir,
-        experiment_name=config.name,
-        augmentation_profile=config.augmentation_profile,
-        scheduler=scheduler,
-    )
+    if config.phase2_batch_schedule is None:
+        best_val_iou = train_phase(
+            name="full_finetune",
+            model=model,
+            train_loader=train_loader,
+            val_loader=val_loader,
+            criterion=criterion,
+            optimizer=optimizer,
+            device=device,
+            epochs=config.phase2_epochs,
+            best_val_iou=best_val_iou,
+            checkpoint_dir=checkpoint_dir,
+            experiment_name=config.name,
+            augmentation_profile=config.augmentation_profile,
+            scheduler=scheduler,
+        )
+
+    else:
+        scheduled_epochs = sum(
+            stage_epochs
+            for stage_epochs, _ in config.phase2_batch_schedule
+        )
+
+        if scheduled_epochs != config.phase2_epochs:
+            raise ValueError(
+                f"Phase 2 batch schedule contains {scheduled_epochs} epochs, "
+                f"but phase2_epochs={config.phase2_epochs}"
+            )
+
+        start_epoch = 1
+
+        for stage_epochs, batch_size in config.phase2_batch_schedule:
+            if train_loader.batch_size != batch_size:
+                train_loader = build_train_loader(
+                    train_dataset=train_dataset,
+                    batch_size=batch_size,
+                    device=device,
+                )
+
+            print()
+            print(
+                f"Starting Phase 2 batch stage: "
+                f"epochs {start_epoch}-{start_epoch + stage_epochs - 1}, "
+                f"batch_size={batch_size}"
+            )
+
+            best_val_iou = train_phase(
+                name="full_finetune",
+                model=model,
+                train_loader=train_loader,
+                val_loader=val_loader,
+                criterion=criterion,
+                optimizer=optimizer,
+                device=device,
+                epochs=stage_epochs,
+                best_val_iou=best_val_iou,
+                checkpoint_dir=checkpoint_dir,
+                experiment_name=config.name,
+                augmentation_profile=config.augmentation_profile,
+                scheduler=scheduler,
+                start_epoch=start_epoch,
+                total_epochs=config.phase2_epochs,
+            )
+
+            start_epoch += stage_epochs
 
     print()
     print(f"Training finished. Best val IoU: {best_val_iou:.4f}")
