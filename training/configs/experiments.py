@@ -159,10 +159,9 @@ EXPERIMENTS = {
     phase2_lr=1e-4,
     weight_decay=1e-4,
     augmentation_profile="none",
-
     loss="focal_dice",
     focal_weight=1.0,
-    dice_weight=1.0,
+    dice_weight=0.0,
     focal_gamma=2.0,
 ),
 
