@@ -212,6 +212,8 @@ def main():
     print(f"BCE weight: {config.bce_weight}")
     print(f"Dice weight: {config.dice_weight}")
     print(f"Checkpoint dir: {checkpoint_dir}")
+    print(f"Focal weight: {config.focal_weight}")
+    print(f"Focal gamma: {config.focal_gamma}")
 
     train_augmentation = build_train_augmentation(
         profile=config.augmentation_profile,
@@ -244,6 +246,8 @@ def main():
         loss_name=config.loss,
         bce_weight=config.bce_weight,
         dice_weight=config.dice_weight,
+        focal_weight=config.focal_weight,
+        focal_gamma=config.focal_gamma,
     )
 
     best_val_iou = -1.0

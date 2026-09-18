@@ -24,6 +24,9 @@ class ExperimentConfig:
     bce_weight: float = 1.0
     dice_weight: float = 1.0
 
+    focal_weight: float = 1.0
+    focal_gamma: float = 2.0
+
     scheduler: str | None = None
     scheduler_min_lr: float | None = None
 
@@ -145,6 +148,22 @@ EXPERIMENTS = {
     loss="bce_dice",
     bce_weight=1.0,
     dice_weight=0.0,
+),
+"loss_focal_dice_v1": ExperimentConfig(
+    name="loss_focal_dice_v1",
+    batch_size=4,
+    seed=42,
+    phase1_epochs=5,
+    phase1_lr=1e-3,
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+    weight_decay=1e-4,
+    augmentation_profile="none",
+
+    loss="focal_dice",
+    focal_weight=1.0,
+    dice_weight=1.0,
+    focal_gamma=2.0,
 ),
 
 
