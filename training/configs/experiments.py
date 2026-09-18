@@ -27,6 +27,9 @@ class ExperimentConfig:
     focal_weight: float = 1.0
     focal_gamma: float = 2.0
 
+    phase2_encoder_lr: float | None = None
+    phase2_decoder_lr: float | None = None
+
     scheduler: str | None = None
     scheduler_min_lr: float | None = None
 
@@ -189,6 +192,27 @@ EXPERIMENTS = {
 
     phase2_epochs=30,
     phase2_lr=1e-4,
+
+    weight_decay=1e-4,
+    augmentation_profile="none",
+
+    loss="bce_dice",
+    bce_weight=1.0,
+    dice_weight=1.0,
+),
+"differential_lr_v1": ExperimentConfig(
+    name="differential_lr_v1",
+    batch_size=4,
+    seed=42,
+
+    phase1_epochs=0,
+    phase1_lr=1e-3,
+
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+
+    phase2_encoder_lr=1e-4,
+    phase2_decoder_lr=1e-3,
 
     weight_decay=1e-4,
     augmentation_profile="none",

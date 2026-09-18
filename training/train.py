@@ -283,11 +283,49 @@ def main():
     # ---------------------------------------------------------
     unfreeze_encoder(model)
 
-    optimizer = torch.optim.AdamW(
-        model.parameters(),
-        lr=config.phase2_lr,
-        weight_decay=config.weight_decay,
-    )
+    if (
+            config.phase2_encoder_lr is not None
+            and config.phase2_decoder_lr is not None
+    ):
+        encoder_params = list(model.encoder.parameters())
+
+        encoder_param_ids = {
+            id(param)
+            for param in encoder_params
+        }
+
+        decoder_params = [
+            param
+            for param in model.parameters()
+            if id(param) not in encoder_param_ids
+        ]
+
+        optimizer = torch.optim.AdamW(
+            [
+                {
+                    "params": encoder_params,
+                    "lr": config.phase2_encoder_lr,
+                },
+                {
+                    "params": decoder_params,
+                    "lr": config.phase2_decoder_lr,
+                },
+            ],
+            weight_decay=config.weight_decay,
+        )
+
+        print(
+            f"Phase 2 learning rates: "
+            f"encoder={config.phase2_encoder_lr:.8f}, "
+            f"decoder/rest={config.phase2_decoder_lr:.8f}"
+        )
+
+    else:
+        optimizer = torch.optim.AdamW(
+            model.parameters(),
+            lr=config.phase2_lr,
+            weight_decay=config.weight_decay,
+        )
 
     scheduler = None
 
