@@ -221,6 +221,24 @@ EXPERIMENTS = {
     bce_weight=1.0,
     dice_weight=1.0,
 ),
+"long_freeze_v1": ExperimentConfig(
+    name="long_freeze_v1",
+    batch_size=4,
+    seed=42,
+
+    phase1_epochs=10,
+    phase1_lr=1e-3,
+
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+
+    weight_decay=1e-4,
+    augmentation_profile="none",
+
+    loss="bce_dice",
+    bce_weight=1.0,
+    dice_weight=1.0,
+),
 
 
 }
