@@ -8,7 +8,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from dataset import PlateSegmentationDataset
-from losses import BCEDiceLoss
+from losses import build_loss
 from metrics import binary_dice, binary_iou
 from model import build_model, freeze_encoder, unfreeze_encoder
 from augmentations import build_train_augmentation
@@ -208,6 +208,9 @@ def main():
     print(f"Batch size: {config.batch_size}")
     print(f"Augmentation: {config.augmentation_profile}")
     print(f"Scheduler: {config.scheduler}")
+    print(f"Loss: {config.loss}")
+    print(f"BCE weight: {config.bce_weight}")
+    print(f"Dice weight: {config.dice_weight}")
     print(f"Checkpoint dir: {checkpoint_dir}")
 
     train_augmentation = build_train_augmentation(
@@ -237,7 +240,11 @@ def main():
     )
 
     model = build_model().to(device)
-    criterion = BCEDiceLoss()
+    criterion = build_loss(
+        loss_name=config.loss,
+        bce_weight=config.bce_weight,
+        dice_weight=config.dice_weight,
+    )
 
     best_val_iou = -1.0
 

@@ -20,6 +20,10 @@ class ExperimentConfig:
 
     augmentation_profile: str
 
+    loss: str = "bce_dice"
+    bce_weight: float = 1.0
+    dice_weight: float = 1.0
+
     scheduler: str | None = None
     scheduler_min_lr: float | None = None
 
@@ -96,6 +100,52 @@ EXPERIMENTS = {
             (10, 16),
         ),
     ),
+"loss_dice_emphasis_v1": ExperimentConfig(
+    name="loss_dice_emphasis_v1",
+    batch_size=4,
+    seed=42,
+    phase1_epochs=5,
+    phase1_lr=1e-3,
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+    weight_decay=1e-4,
+    augmentation_profile="none",
+
+    loss="bce_dice",
+    bce_weight=0.5,
+    dice_weight=1.0,
+),
+# L2 — Dice only
+"loss_dice_only_v1": ExperimentConfig(
+    name="loss_dice_only_v1",
+    batch_size=4,
+    seed=42,
+    phase1_epochs=5,
+    phase1_lr=1e-3,
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+    weight_decay=1e-4,
+    augmentation_profile="none",
+    loss="bce_dice",
+    bce_weight=0.0,
+    dice_weight=1.0,
+),
+
+# L3 — BCE only
+"loss_bce_only_v1": ExperimentConfig(
+    name="loss_bce_only_v1",
+    batch_size=4,
+    seed=42,
+    phase1_epochs=5,
+    phase1_lr=1e-3,
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+    weight_decay=1e-4,
+    augmentation_profile="none",
+    loss="bce_dice",
+    bce_weight=1.0,
+    dice_weight=0.0,
+),
 
 
 }

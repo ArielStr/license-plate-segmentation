@@ -57,3 +57,17 @@ class BCEDiceLoss(nn.Module):
             self.bce_weight * bce_loss
             + self.dice_weight * dice_loss
         )
+
+def build_loss(
+    loss_name: str,
+    bce_weight: float = 1.0,
+    dice_weight: float = 1.0,
+) -> nn.Module:
+
+    if loss_name == "bce_dice":
+        return BCEDiceLoss(
+            bce_weight=bce_weight,
+            dice_weight=dice_weight,
+        )
+
+    raise ValueError(f"Unsupported loss: {loss_name}")
