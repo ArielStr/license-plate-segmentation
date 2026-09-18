@@ -35,6 +35,9 @@ class ExperimentConfig:
 
     phase2_batch_schedule: tuple[tuple[int, int], ...] | None = None
 
+    input_width: int = 384
+    input_height: int = 128
+
 
 EXPERIMENTS = {
     "baseline_v1": ExperimentConfig(
@@ -238,6 +241,27 @@ EXPERIMENTS = {
     loss="bce_dice",
     bce_weight=1.0,
     dice_weight=1.0,
+),
+"resolution_low_v1": ExperimentConfig(
+    name="resolution_low_v1",
+    batch_size=4,
+    seed=42,
+
+    phase1_epochs=5,
+    phase1_lr=1e-3,
+
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+
+    weight_decay=1e-4,
+    augmentation_profile="none",
+
+    loss="bce_dice",
+    bce_weight=1.0,
+    dice_weight=1.0,
+
+    input_width=192,
+    input_height=64,
 ),
 
 

@@ -11,8 +11,8 @@ from torch.utils.data import Dataset
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-TARGET_WIDTH = 384
-TARGET_HEIGHT = 128
+DEFAULT_TARGET_WIDTH = 384
+DEFAULT_TARGET_HEIGHT = 128
 
 # ImageNet normalization for the pretrained ResNet34 encoder.
 IMAGENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
@@ -77,11 +77,15 @@ def letterbox(
 
 class PlateSegmentationDataset(Dataset):
     def __init__(
-        self,
-        split: str,
-        split_csv: Path | str | None = None,
-        augment=None,
+            self,
+            split: str,
+            split_csv: Path | str | None = None,
+            augment=None,
+            target_width: int = DEFAULT_TARGET_WIDTH,
+            target_height: int = DEFAULT_TARGET_HEIGHT,
     ):
+        self.target_width = target_width
+        self.target_height = target_height
         if split not in {"train", "val", "test"}:
             raise ValueError(
                 f"split must be 'train', 'val', or 'test', got: {split}"
@@ -144,16 +148,16 @@ class PlateSegmentationDataset(Dataset):
 
         image, image_meta = letterbox(
             image,
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
+            self.target_width,
+            self.target_height,
             interpolation=cv2.INTER_LINEAR,
             pad_value=(0, 0, 0),
         )
 
         mask, mask_meta = letterbox(
             mask,
-            TARGET_WIDTH,
-            TARGET_HEIGHT,
+            self.target_width,
+            self.target_height,
             interpolation=cv2.INTER_NEAREST,
             pad_value=0,
         )

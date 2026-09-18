@@ -214,6 +214,10 @@ def main():
     print(f"Checkpoint dir: {checkpoint_dir}")
     print(f"Focal weight: {config.focal_weight}")
     print(f"Focal gamma: {config.focal_gamma}")
+    print(
+        f"Input resolution: "
+        f"{config.input_height}x{config.input_width}"
+    )
 
     train_augmentation = build_train_augmentation(
         profile=config.augmentation_profile,
@@ -221,10 +225,14 @@ def main():
     train_dataset = PlateSegmentationDataset(
         split="train",
         augment=train_augmentation,
+        target_width=config.input_width,
+        target_height=config.input_height,
     )
 
     val_dataset = PlateSegmentationDataset(
         split="val",
+        target_width=config.input_width,
+        target_height=config.input_height,
     )
 
     train_loader = build_train_loader(
