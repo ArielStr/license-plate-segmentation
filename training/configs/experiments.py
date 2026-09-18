@@ -38,6 +38,9 @@ class ExperimentConfig:
     input_width: int = 384
     input_height: int = 128
 
+    architecture: str = "unet"
+    encoder_name: str = "resnet34"
+
 
 EXPERIMENTS = {
     "baseline_v1": ExperimentConfig(
@@ -283,6 +286,80 @@ EXPERIMENTS = {
 
     input_width=768,
     input_height=256,
+),
+"encoder_resnet18_v1": ExperimentConfig(
+    name="encoder_resnet18_v1",
+    batch_size=4,
+    seed=42,
+
+    phase1_epochs=5,
+    phase1_lr=1e-3,
+
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+
+    weight_decay=1e-4,
+    augmentation_profile="none",
+
+    loss="bce_dice",
+    bce_weight=1.0,
+    dice_weight=1.0,
+
+    input_width=384,
+    input_height=128,
+
+    architecture="unet",
+    encoder_name="resnet18",
+),
+
+"encoder_resnet50_v1": ExperimentConfig(
+    name="encoder_resnet50_v1",
+    batch_size=4,
+    seed=42,
+
+    phase1_epochs=5,
+    phase1_lr=1e-3,
+
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+
+    weight_decay=1e-4,
+    augmentation_profile="none",
+
+    loss="bce_dice",
+    bce_weight=1.0,
+    dice_weight=1.0,
+
+    input_width=384,
+    input_height=128,
+
+    architecture="unet",
+    encoder_name="resnet50",
+),
+
+"deeplabv3plus_resnet34_v1": ExperimentConfig(
+    name="deeplabv3plus_resnet34_v1",
+    batch_size=4,
+    seed=42,
+
+    phase1_epochs=5,
+    phase1_lr=1e-3,
+
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+
+    weight_decay=1e-4,
+    augmentation_profile="none",
+
+    loss="bce_dice",
+    bce_weight=1.0,
+    dice_weight=1.0,
+
+    input_width=384,
+    input_height=128,
+
+    architecture="deeplabv3plus",
+    encoder_name="resnet34",
 ),
 
 

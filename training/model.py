@@ -4,23 +4,37 @@ import segmentation_models_pytorch as smp
 import torch
 
 
-def build_model() -> torch.nn.Module:
+def build_model(
+    architecture: str = "unet",
+    encoder_name: str = "resnet34",
+) -> torch.nn.Module:
     """
-    U-Net with a ResNet34 encoder pretrained on ImageNet.
-
-    Input:
-        [B, 3, 128, 384]
-
-    Output:
-        [B, 1, 128, 384] logits
+    Build a binary segmentation model with an ImageNet-pretrained encoder.
     """
-    model = smp.Unet(
-        encoder_name="resnet34",
-        encoder_weights="imagenet",
-        in_channels=3,
-        classes=1,
-        activation=None,  # return logits
-    )
+
+    if architecture == "unet":
+        model = smp.Unet(
+            encoder_name=encoder_name,
+            encoder_weights="imagenet",
+            in_channels=3,
+            classes=1,
+            activation=None,
+        )
+
+    elif architecture == "deeplabv3plus":
+        model = smp.DeepLabV3Plus(
+            encoder_name=encoder_name,
+            encoder_weights="imagenet",
+            in_channels=3,
+            classes=1,
+            activation=None,
+        )
+
+    else:
+        raise ValueError(
+            f"Unsupported architecture: {architecture}"
+        )
+
     return model
 
 
@@ -35,10 +49,24 @@ def unfreeze_encoder(model: torch.nn.Module) -> None:
 
 
 if __name__ == "__main__":
-    model = build_model()
+    configs = [
+        ("unet", "resnet18"),
+        ("unet", "resnet34"),
+        ("unet", "resnet50"),
+        ("deeplabv3plus", "resnet34"),
+    ]
 
     x = torch.randn(2, 3, 128, 384)
-    y = model(x)
 
-    print("Input shape: ", tuple(x.shape))
-    print("Output shape:", tuple(y.shape))
+    for architecture, encoder_name in configs:
+        model = build_model(
+            architecture=architecture,
+            encoder_name=encoder_name,
+        )
+
+        y = model(x)
+
+        print(
+            f"{architecture} + {encoder_name}: "
+            f"{tuple(x.shape)} -> {tuple(y.shape)}"
+        )

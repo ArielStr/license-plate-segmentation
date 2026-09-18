@@ -77,8 +77,7 @@ def train_phase(
     epochs,
     best_val_iou,
     checkpoint_dir,
-    experiment_name,
-    augmentation_profile,
+    config,
     scheduler=None,
     start_epoch=1,
     total_epochs=None,
@@ -131,8 +130,15 @@ def train_phase(
                     "phase": name,
                     "epoch": epoch,
                     "batch_size": current_batch_size,
-                    "experiment": experiment_name,
-                    "augmentation_profile": augmentation_profile,
+
+                    "experiment": config.name,
+                    "augmentation_profile": config.augmentation_profile,
+
+                    "architecture": config.architecture,
+                    "encoder_name": config.encoder_name,
+
+                    "input_width": config.input_width,
+                    "input_height": config.input_height,
                 },
                 checkpoint_path,
             )
@@ -204,6 +210,8 @@ def main():
 
     print(f"Device: {device}")
     print(f"Experiment: {config.name}")
+    print(f"Architecture: {config.architecture}")
+    print(f"Encoder: {config.encoder_name}")
     print(f"Seed: {config.seed}")
     print(f"Batch size: {config.batch_size}")
     print(f"Augmentation: {config.augmentation_profile}")
@@ -249,7 +257,10 @@ def main():
         pin_memory=(device.type == "cuda"),
     )
 
-    model = build_model().to(device)
+    model = build_model(
+        architecture=config.architecture,
+        encoder_name=config.encoder_name,
+    ).to(device)
     criterion = build_loss(
         loss_name=config.loss,
         bce_weight=config.bce_weight,
@@ -282,8 +293,7 @@ def main():
         epochs=config.phase1_epochs,
         best_val_iou=best_val_iou,
         checkpoint_dir=checkpoint_dir,
-        experiment_name=config.name,
-        augmentation_profile=config.augmentation_profile,
+        config=config,
     )
 
     # ---------------------------------------------------------
@@ -360,8 +370,7 @@ def main():
             epochs=config.phase2_epochs,
             best_val_iou=best_val_iou,
             checkpoint_dir=checkpoint_dir,
-            experiment_name=config.name,
-            augmentation_profile=config.augmentation_profile,
+            config=config,
             scheduler=scheduler,
         )
 
@@ -405,8 +414,7 @@ def main():
                 epochs=stage_epochs,
                 best_val_iou=best_val_iou,
                 checkpoint_dir=checkpoint_dir,
-                experiment_name=config.name,
-                augmentation_profile=config.augmentation_profile,
+                config=config,
                 scheduler=scheduler,
                 start_epoch=start_epoch,
                 total_epochs=config.phase2_epochs,
