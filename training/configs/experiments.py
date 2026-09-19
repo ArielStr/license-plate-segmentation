@@ -441,6 +441,96 @@ EXPERIMENTS = {
         architecture="unet",
         encoder_name="resnet34",
     ),
+# ============================================================
+    # V2 — Training strategy
+    # ============================================================
+
+    # V2-3 — Data augmentation
+    "augmentation_v2": ExperimentConfig(
+        name="augmentation_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="augmentation_v1",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-4 — Cosine learning-rate scheduler
+    "cosine_lr_v2": ExperimentConfig(
+        name="cosine_lr_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        scheduler="cosine",
+        scheduler_min_lr=1e-6,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-5 — Progressive batch size
+    "progressive_batch_v2": ExperimentConfig(
+        name="progressive_batch_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        phase2_batch_schedule=(
+            (10, 4),
+            (10, 8),
+            (10, 16),
+        ),
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
 
 }
 
