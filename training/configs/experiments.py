@@ -805,6 +805,87 @@ EXPERIMENTS = {
         architecture="unet",
         encoder_name="resnet34",
     ),
+# ============================================================
+    # V2 - Architecture / Encoder
+    # ============================================================
+
+    # V2-16 - U-Net + ResNet18
+    "encoder_resnet18_v2": ExperimentConfig(
+        name="encoder_resnet18_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet18",
+    ),
+
+    # V2-17 - U-Net + ResNet50
+    "encoder_resnet50_v2": ExperimentConfig(
+        name="encoder_resnet50_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet50",
+    ),
+
+    # V2-18 - DeepLabV3+ + ResNet34
+    "deeplabv3plus_resnet34_v2": ExperimentConfig(
+        name="deeplabv3plus_resnet34_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="deeplabv3plus",
+        encoder_name="resnet34",
+    ),
 
 }
 
