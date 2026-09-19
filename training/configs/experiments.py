@@ -750,6 +750,61 @@ EXPERIMENTS = {
         architecture="unet",
         encoder_name="resnet34",
     ),
+    # ============================================================
+    # V2 - Input resolution
+    # ============================================================
+
+    # V2-14 - Low resolution: 64x192
+    "resolution_low_v2": ExperimentConfig(
+        name="resolution_low_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=192,
+        input_height=64,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-15 - High resolution: 256x768
+    "resolution_high_v2": ExperimentConfig(
+        name="resolution_high_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=768,
+        input_height=256,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
 
 }
 
