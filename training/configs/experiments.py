@@ -531,6 +531,141 @@ EXPERIMENTS = {
         architecture="unet",
         encoder_name="resnet34",
     ),
+    # ============================================================
+    # V2 - Loss experiments
+    # ============================================================
+
+    # V2-6 - Dice emphasis: 0.5 * BCE + 1.0 * Dice
+    "loss_dice_emphasis_v2": ExperimentConfig(
+        name="loss_dice_emphasis_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=0.5,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-7 - Dice only
+    "loss_dice_only_v2": ExperimentConfig(
+        name="loss_dice_only_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=0.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-8 - BCE only
+    "loss_bce_only_v2": ExperimentConfig(
+        name="loss_bce_only_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=0.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-9 - Focal + Dice
+    "loss_focal_dice_v2": ExperimentConfig(
+        name="loss_focal_dice_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="focal_dice",
+        focal_weight=1.0,
+        dice_weight=1.0,
+        focal_gamma=2.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-10 - Focal only
+    "loss_only_focal_v2": ExperimentConfig(
+        name="loss_only_focal_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="focal_dice",
+        focal_weight=1.0,
+        dice_weight=0.0,
+        focal_gamma=2.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
 
 }
 
