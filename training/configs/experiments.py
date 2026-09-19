@@ -390,6 +390,57 @@ EXPERIMENTS = {
         architecture="unet",
         encoder_name="resnet34",
     ),
+    # V2-1 — Batch size 8
+    "batch_size_8_v2": ExperimentConfig(
+        name="batch_size_8_v2",
+        seed=42,
+        batch_size=8,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-2 — Batch size 16
+    "batch_size_16_v2": ExperimentConfig(
+        name="batch_size_16_v2",
+        seed=42,
+        batch_size=16,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
 
 }
 
