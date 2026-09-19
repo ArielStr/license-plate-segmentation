@@ -886,6 +886,40 @@ EXPERIMENTS = {
         architecture="deeplabv3plus",
         encoder_name="resnet34",
     ),
+# ============================================================
+    # V2 - Failure-analysis-driven experiment
+    # ============================================================
+
+    # High resolution + augmentation
+    #
+    # Hypothesis:
+    # Higher spatial resolution may improve boundary/detail accuracy,
+    # while augmentation may improve robustness to appearance
+    # variations such as blur, illumination changes and reflections.
+    "highres_augmentation_v2": ExperimentConfig(
+        name="highres_augmentation_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="augmentation_v1",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=768,
+        input_height=256,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
 
 }
 
