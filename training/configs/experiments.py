@@ -666,6 +666,90 @@ EXPERIMENTS = {
         architecture="unet",
         encoder_name="resnet34",
     ),
+    # ============================================================
+    # V2 - Fine-tuning strategy
+    # ============================================================
+
+    # V2-11 - No frozen-encoder phase
+    "no_freeze_v2": ExperimentConfig(
+        name="no_freeze_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=0,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-12 - Differential learning rates
+    "differential_lr_v2": ExperimentConfig(
+        name="differential_lr_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=0,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        phase2_encoder_lr=1e-4,
+        phase2_decoder_lr=1e-3,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # V2-13 - Longer frozen-encoder phase
+    "long_freeze_v2": ExperimentConfig(
+        name="long_freeze_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=10,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
 
 }
 
