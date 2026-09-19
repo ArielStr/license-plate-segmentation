@@ -361,7 +361,35 @@ EXPERIMENTS = {
     architecture="deeplabv3plus",
     encoder_name="resnet34",
 ),
+# ============================================================
+    # Dataset V2 experiments — 250 samples
+    # ============================================================
 
+    # V2-0 — Controlled baseline
+    "baseline_v2": ExperimentConfig(
+        name="baseline_v2",
+        seed=42,
+        batch_size=4,
+
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+
+        weight_decay=1e-4,
+        augmentation_profile="none",
+
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+
+        input_width=384,
+        input_height=128,
+
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
 
 }
 
