@@ -920,6 +920,43 @@ EXPERIMENTS = {
         architecture="unet",
         encoder_name="resnet34",
     ),
+# ============================================================
+# V2 - Failure-analysis-driven blur experiment
+# ============================================================
+
+# Strong Gaussian blur augmentation
+#
+# Hypothesis:
+# Failure analysis showed that several difficult validation
+# samples are small / visually degraded, while much of the
+# remaining error is concentrated near object boundaries.
+#
+# This experiment isolates stronger blur augmentation while
+# keeping the baseline_v2 training recipe unchanged.
+"strong_blur_v2": ExperimentConfig(
+    name="strong_blur_v2",
+    seed=42,
+    batch_size=4,
+
+    phase1_epochs=5,
+    phase1_lr=1e-3,
+
+    phase2_epochs=30,
+    phase2_lr=1e-4,
+
+    weight_decay=1e-4,
+    augmentation_profile="strong_blur_v2",
+
+    loss="bce_dice",
+    bce_weight=1.0,
+    dice_weight=1.0,
+
+    input_width=384,
+    input_height=128,
+
+    architecture="unet",
+    encoder_name="resnet34",
+),
 
 }
 

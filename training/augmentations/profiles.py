@@ -17,6 +17,7 @@ AVAILABLE_PROFILES = (
     "local_shadow_v1",
     "illumination_gradient_v1",
     "gaussian_blur_v1",
+    "strong_blur_v2",
     "augmentation_v1"
 )
 
@@ -35,6 +36,25 @@ def build_gaussian_blur_v1() -> A.ReplayCompose:
         RandomGaussianBlur(
             sigma_range=(0.5, 1.5),
             p=0.30,
+        ),
+    ])
+
+def build_strong_blur_v2() -> A.ReplayCompose:
+    """
+    Strong Gaussian-blur augmentation.
+
+    Hypothesis:
+    stronger blur exposure may improve robustness and boundary
+    localization for small / blurry license plates.
+
+    Blur is applied to 50% of training samples.
+    When applied, sigma is sampled uniformly from 1.5 to 3.0.
+    """
+
+    return A.ReplayCompose([
+        RandomGaussianBlur(
+            sigma_range=((0.8, 1.8)),
+            p=0.50,
         ),
     ])
 def build_global_brightness_v1() -> A.Compose:
@@ -144,6 +164,8 @@ def build_train_augmentation(
 
     if profile == "augmentation_v1":
         return build_augmentation_v1()
+    if profile == "strong_blur_v2":
+        return build_strong_blur_v2()
 
     raise ValueError(
         f"Unknown augmentation profile: '{profile}'. "

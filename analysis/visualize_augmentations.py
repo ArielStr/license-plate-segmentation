@@ -379,8 +379,8 @@ def main(
 
 
 if __name__ == "__main__":
-    PROFILE = "augmentation_v1"
-    NUM_IMAGES = 5
+    PROFILE = "strong_blur_v2"
+    NUM_IMAGES = 10
     NUM_AUGMENTATIONS = 7
     SEED = 42
     SHOW_MASK = False
