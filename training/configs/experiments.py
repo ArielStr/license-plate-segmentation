@@ -1,7 +1,7 @@
-from training.configs.experiment_config import ExperimentConfig
-from training.configs.experiments_v1 import EXPERIMENTS_V1
-from training.configs.experiments_v2 import EXPERIMENTS_V2
-from training.configs.experiments_v3 import EXPERIMENTS_V3
+from .experiment_config import ExperimentConfig
+from .experiments_v1 import EXPERIMENTS_V1
+from .experiments_v2 import EXPERIMENTS_V2
+from .experiments_v3 import EXPERIMENTS_V3
 
 
 EXPERIMENTS = {

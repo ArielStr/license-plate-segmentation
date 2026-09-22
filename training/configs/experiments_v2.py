@@ -1,5 +1,4 @@
-from training.configs.experiment_config import ExperimentConfig
-
+from .experiment_config import ExperimentConfig
 
 EXPERIMENTS_V2 = {
     "baseline_v2": ExperimentConfig(

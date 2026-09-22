@@ -5,8 +5,7 @@ import argparse
 
 import numpy as np
 import torch
-from torch.utils.data import DataLoader
-
+from torch.utils.data import DataLoader, Subset
 from dataset import PlateSegmentationDataset
 from losses import build_loss
 from metrics import binary_dice, binary_iou
@@ -132,6 +131,7 @@ def train_phase(
                     "batch_size": current_batch_size,
 
                     "experiment": config.name,
+                    "train_size": config.train_size,
                     "augmentation_profile": config.augmentation_profile,
 
                     "architecture": config.architecture,
@@ -236,12 +236,30 @@ def main():
         target_width=config.input_width,
         target_height=config.input_height,
     )
+    full_train_size = len(train_dataset)
+
+    if config.train_size is not None:
+        if config.train_size > full_train_size:
+            raise ValueError(
+                f"Requested train_size={config.train_size}, "
+                f"but train split contains only {full_train_size} samples."
+            )
+
+        rng = np.random.default_rng(config.seed)
+        indices = rng.permutation(full_train_size)
+
+        train_dataset = Subset(
+            train_dataset,
+            indices[:config.train_size].tolist(),
+        )
 
     val_dataset = PlateSegmentationDataset(
         split="val",
         target_width=config.input_width,
         target_height=config.input_height,
     )
+    print(f"Training samples: {len(train_dataset)}")
+    print(f"Validation samples: {len(val_dataset)}")
 
     train_loader = build_train_loader(
         train_dataset=train_dataset,

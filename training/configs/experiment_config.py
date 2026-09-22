@@ -40,3 +40,5 @@ class ExperimentConfig:
 
     architecture: str = "unet"
     encoder_name: str = "resnet34"
+
+    train_size: int | None = None
