@@ -61,23 +61,24 @@ The model is intentionally trained on **plate-centered crops rather than arbitra
 
 ## Dataset
 
-The final dataset contains **606 manually annotated license-plate
-crops**.
+The final dataset contains **606 manually annotated license-plate crops**.
 
-  Split          Samples
-  ------------ ---------
-  Train              424
-  Validation          91
-  Test                91
-  **Total**      **606**
+| Split | Samples |
+| --- | ---: |
+| Train | 424 |
+| Validation | 91 |
+| Test | 91 |
+| **Total** | **606** |
 
-The dataset contains variation in plate size, viewing angle, blur,
-illumination, shadows, and surrounding vehicle appearance. Annotations
-were created using a custom polygon annotation tool and converted into
-plate-centered crops with binary masks.
+The dataset contains variation in plate size, viewing angle, blur, illumination, shadows, and surrounding vehicle appearance. Annotations were created using a custom polygon annotation tool and converted into plate-centered crops with binary masks.
 
-The final test set remained untouched during model development and model
-selection.
+### Dataset Examples
+
+Below are representative examples of the plate crops and their corresponding manually annotated ground-truth masks.
+
+![Dataset examples](assets/dataset_examples.png)
+
+The final test set remained untouched during model development and model selection.
 
 ------------------------------------------------------------------------
 
