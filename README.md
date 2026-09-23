@@ -257,6 +257,9 @@ Input | Predicted Mask | Segmentation Overlay
 > **Note:** model checkpoints and the full image dataset are not tracked
 > in Git because of their size. Train the desired experiment locally or
 > provide a compatible checkpoint when running inference.
+>
+> **Model weights:** Trained checkpoints are not included in this repository due to file size.  
+> If you would like to obtain the weights for the final model, feel free to contact me at st.ariel100@gmail.com.
 
 ------------------------------------------------------------------------
 
