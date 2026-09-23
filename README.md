@@ -150,71 +150,63 @@ resolution**.
 
 ## Data Scaling
 
-Models were trained on nested subsets of the same training split while
-keeping the **same 91-image validation set** and the same training
-recipe.
+Models were trained on nested subsets of the same training split while keeping the **same 91-image validation set** and the same training recipe.
 
-    Training Samples   Validation IoU
-  ------------------ ----------------
-                 175           0.9638
-                 250           0.9665
-                 350           0.9675
-                 424       **0.9681**
+| Training Samples | Validation IoU |
+| ---: | ---: |
+| 175 | 0.9638 |
+| 250 | 0.9665 |
+| 350 | 0.9675 |
+| **424** | **0.9681** |
 
-Performance improved monotonically with more training data, with
-diminishing returns.
+Performance improved monotonically as more training data was added, although the gains showed diminishing returns.
 
-For the same 10 hardest validation examples identified by the 175-sample
-model:
+For the same 10 hardest validation examples identified by the 175-sample model:
 
-    Training Samples   Mean IoU on Hardest 10
-  ------------------ ------------------------
-                 175                   0.9239
-                 250                   0.9393
-                 350                   0.9414
-                 424               **0.9444**
+| Training Samples | Mean IoU on Hardest 10 |
+| ---: | ---: |
+| 175 | 0.9239 |
+| 250 | 0.9393 |
+| 350 | 0.9414 |
+| **424** | **0.9444** |
 
-Additional data therefore helped difficult generalization cases
-substantially more than the overall mean alone suggests.
+While the overall validation IoU improved by **+0.0043**, performance on these difficult examples improved by **+0.0205**.
+
+This suggests that additional training data was especially valuable for improving robustness on difficult cases, even after the average validation performance had begun to saturate.
 
 ------------------------------------------------------------------------
 
 ## Resolution Study
 
-  Input Resolution     Validation IoU
-  ------------------ ----------------
-  64 × 192                     0.9659
-  128 × 384                    0.9681
-  **256 × 768**            **0.9690**
+Input resolution was one of the few model-side changes that produced a consistent improvement.
 
-Higher input resolution was one of the few model-side changes that
-produced a consistent directional improvement, so **256 × 768** was
-carried forward to final model selection.
+| Input Resolution | Validation IoU |
+| :--- | ---: |
+| 64 × 192 | 0.9659 |
+| 128 × 384 | 0.9681 |
+| **256 × 768** | **0.9690** |
 
-------------------------------------------------------------------------
+Higher input resolution consistently improved segmentation performance. Based on this result, **256 × 768** was carried forward to final model selection.
+
+---
 
 ## Final Model Selection
 
-The strongest candidates were also compared in the **original crop
-coordinate system**. Each model ran at its trained resolution, then its
-probability map was mapped back to the original image dimensions.
+The strongest candidates were compared in the **original crop coordinate system**. Each model was evaluated at its trained resolution, and its probability map was then mapped back to the original image dimensions.
 
-  Model                                            Mean Validation IoU
-  ---------------------------------------------- ---------------------
-  Baseline --- 128 × 384                                        0.9642
-  High Resolution --- 256 × 768                                 0.9709
-  High Resolution + Augmentation --- 256 × 768                  0.9710
+| Model | Resolution | Mean Validation IoU |
+| :--- | :---: | ---: |
+| Baseline | 128 × 384 | 0.9642 |
+| High Resolution | 256 × 768 | 0.9709 |
+| High Resolution + Augmentation | 256 × 768 | 0.9710 |
 
-High resolution produced a clear improvement over the baseline. Adding
-augmentation changed mean IoU by only about **+0.0001**, slightly
-reduced median IoU, and improved fewer than half of the validation
-samples.
+High resolution produced a clear improvement over the baseline. Adding augmentation on top of the high-resolution model improved mean IoU by only **+0.0001**, slightly reduced median IoU, and improved fewer than half of the validation samples.
 
 The selected final model was therefore:
 
 > **U-Net + ResNet34 at 256 × 768, without training augmentation.**
 
-This decision was made before opening the held-out test set.
+This decision was made **before evaluating on the held-out test set**.
 
 ------------------------------------------------------------------------
 
