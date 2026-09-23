@@ -1,129 +1,507 @@
 from .experiment_config import ExperimentConfig
 
+
+# ============================================================
+# V3 — Baseline + Data Scaling
+# ============================================================
+
 EXPERIMENTS_V3 = {
-    # ============================================================
-    # V3 — Dataset scaling experiments
-    # Dataset: 606 samples
-    # Split: 424 train / 91 val / 91 test
-    #
-    # Goal:
-    # Measure the effect of increasing the amount of training data
-    # while keeping the validation set and training recipe fixed.
-    #
-    # Nested subsets:
-    # 175 ⊂ 250 ⊂ 350 ⊂ 424
-    # ============================================================
-
-    # V3-0 — 175 training samples
-    "scaling_175_v3": ExperimentConfig(
-        name="scaling_175_v3",
-        seed=42,
-        batch_size=4,
-
-        phase1_epochs=5,
-        phase1_lr=1e-3,
-
-        phase2_epochs=30,
-        phase2_lr=1e-4,
-
-        weight_decay=1e-4,
-        augmentation_profile="none",
-
-        loss="bce_dice",
-        bce_weight=1.0,
-        dice_weight=1.0,
-
-        input_width=384,
-        input_height=128,
-
-        architecture="unet",
-        encoder_name="resnet34",
-
-        train_size=175,
-    ),
-
-    # V3-1 — 250 training samples
-    "scaling_250_v3": ExperimentConfig(
-        name="scaling_250_v3",
-        seed=42,
-        batch_size=4,
-
-        phase1_epochs=5,
-        phase1_lr=1e-3,
-
-        phase2_epochs=30,
-        phase2_lr=1e-4,
-
-        weight_decay=1e-4,
-        augmentation_profile="none",
-
-        loss="bce_dice",
-        bce_weight=1.0,
-        dice_weight=1.0,
-
-        input_width=384,
-        input_height=128,
-
-        architecture="unet",
-        encoder_name="resnet34",
-
-        train_size=250,
-    ),
-
-    # V3-2 — 350 training samples
-    "scaling_350_v3": ExperimentConfig(
-        name="scaling_350_v3",
-        seed=42,
-        batch_size=4,
-
-        phase1_epochs=5,
-        phase1_lr=1e-3,
-
-        phase2_epochs=30,
-        phase2_lr=1e-4,
-
-        weight_decay=1e-4,
-        augmentation_profile="none",
-
-        loss="bce_dice",
-        bce_weight=1.0,
-        dice_weight=1.0,
-
-        input_width=384,
-        input_height=128,
-
-        architecture="unet",
-        encoder_name="resnet34",
-
-        train_size=350,
-    ),
-
-    # V3-3 — Full training set: 424 samples
-    # This is also the V3 controlled baseline.
     "baseline_v3": ExperimentConfig(
         name="baseline_v3",
         seed=42,
         batch_size=4,
-
         phase1_epochs=5,
         phase1_lr=1e-3,
-
         phase2_epochs=30,
         phase2_lr=1e-4,
-
         weight_decay=1e-4,
         augmentation_profile="none",
-
         loss="bce_dice",
         bce_weight=1.0,
         dice_weight=1.0,
-
         input_width=384,
         input_height=128,
-
         architecture="unet",
         encoder_name="resnet34",
-
         train_size=None,
+    ),
+
+    "scaling_175_v3": ExperimentConfig(
+        name="scaling_175_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+        train_size=175,
+    ),
+
+    "scaling_250_v3": ExperimentConfig(
+        name="scaling_250_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+        train_size=250,
+    ),
+
+    "scaling_350_v3": ExperimentConfig(
+        name="scaling_350_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+        train_size=350,
+    ),
+
+    # ============================================================
+    # V3 — Batch size
+    # ============================================================
+
+    "batch_size_8_v3": ExperimentConfig(
+        name="batch_size_8_v3",
+        seed=42,
+        batch_size=8,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "batch_size_16_v3": ExperimentConfig(
+        name="batch_size_16_v3",
+        seed=42,
+        batch_size=16,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # ============================================================
+    # V3 — Training strategy
+    # ============================================================
+
+    "augmentation_v3": ExperimentConfig(
+        name="augmentation_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="augmentation_v1",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "cosine_lr_v3": ExperimentConfig(
+        name="cosine_lr_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        scheduler="cosine",
+        scheduler_min_lr=1e-6,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "progressive_batch_v3": ExperimentConfig(
+        name="progressive_batch_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        phase2_batch_schedule=(
+            (10, 4),
+            (10, 8),
+            (10, 16),
+        ),
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # ============================================================
+    # V3 — Loss
+    # ============================================================
+
+    "loss_dice_emphasis_v3": ExperimentConfig(
+        name="loss_dice_emphasis_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=0.5,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "loss_dice_only_v3": ExperimentConfig(
+        name="loss_dice_only_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=0.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "loss_bce_only_v3": ExperimentConfig(
+        name="loss_bce_only_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=0.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "loss_focal_dice_v3": ExperimentConfig(
+        name="loss_focal_dice_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="focal_dice",
+        focal_weight=1.0,
+        dice_weight=1.0,
+        focal_gamma=2.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "loss_only_focal_v3": ExperimentConfig(
+        name="loss_only_focal_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="focal_dice",
+        focal_weight=1.0,
+        dice_weight=0.0,
+        focal_gamma=2.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # ============================================================
+    # V3 — Fine-tuning strategy
+    # ============================================================
+
+    "no_freeze_v3": ExperimentConfig(
+        name="no_freeze_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=0,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "differential_lr_v3": ExperimentConfig(
+        name="differential_lr_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=0,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        phase2_encoder_lr=1e-4,
+        phase2_decoder_lr=1e-3,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "long_freeze_v3": ExperimentConfig(
+        name="long_freeze_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=10,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # ============================================================
+    # V3 — Input resolution
+    # ============================================================
+
+    "resolution_low_v3": ExperimentConfig(
+        name="resolution_low_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=192,
+        input_height=64,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "resolution_high_v3": ExperimentConfig(
+        name="resolution_high_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=768,
+        input_height=256,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    # ============================================================
+    # V3 — Architecture / Encoder
+    # ============================================================
+
+    "encoder_resnet18_v3": ExperimentConfig(
+        name="encoder_resnet18_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet18",
+    ),
+
+    "encoder_resnet50_v3": ExperimentConfig(
+        name="encoder_resnet50_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet50",
+    ),
+
+    "deeplabv3plus_resnet34_v3": ExperimentConfig(
+        name="deeplabv3plus_resnet34_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="none",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="deeplabv3plus",
+        encoder_name="resnet34",
+    ),
+
+    # ============================================================
+    # V3 — Failure-analysis-driven experiments
+    # ============================================================
+
+    "highres_augmentation_v3": ExperimentConfig(
+        name="highres_augmentation_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="augmentation_v1",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=768,
+        input_height=256,
+        architecture="unet",
+        encoder_name="resnet34",
+    ),
+
+    "strong_blur_v3": ExperimentConfig(
+        name="strong_blur_v3",
+        seed=42,
+        batch_size=4,
+        phase1_epochs=5,
+        phase1_lr=1e-3,
+        phase2_epochs=30,
+        phase2_lr=1e-4,
+        weight_decay=1e-4,
+        augmentation_profile="strong_blur_v2",
+        loss="bce_dice",
+        bce_weight=1.0,
+        dice_weight=1.0,
+        input_width=384,
+        input_height=128,
+        architecture="unet",
+        encoder_name="resnet34",
     ),
 }
