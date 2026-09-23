@@ -28,3 +28,6 @@ analysis/outputs/
 Thumbs.db
 
 evaluation/
+
+# Local inference inputs
+inference_test/
