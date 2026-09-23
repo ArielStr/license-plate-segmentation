@@ -1,9 +1,7 @@
 import random
-from typing import Optional
 
 import albumentations as A
 import cv2
-import numpy as np
 
 
 class RandomGaussianBlur(A.ImageOnlyTransform):
